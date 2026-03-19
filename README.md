@@ -40,15 +40,9 @@ Think of it as a **career coach for developers** — it looks at your GitHub, un
 
 #### Node.js + Express
 
----
-
 #### Prisma ORM
 
----
-
 #### NeonDB (PostgreSQL)
-
----
 
 #### Passport.js + Google OAuth 2.0
 **What it is:** Passport.js is an authentication middleware for Node.js. Google OAuth 2.0 is Google's system that lets users log in to third-party apps using their Google account.
@@ -57,11 +51,8 @@ Think of it as a **career coach for developers** — it looks at your GitHub, un
 
 #### JWT (JSON Web Tokens)
 
-
 #### Groq API + LLaMA 3.3
 **What it is:** Groq is a platform that provides extremely fast inference for open-source AI models. LLaMA 3.3 is Meta's powerful open-source language model — comparable to GPT-4 but completely free.
-
----
 
 **What the AI does:**
 - Reads the GitHub profile data
@@ -71,14 +62,10 @@ Think of it as a **career coach for developers** — it looks at your GitHub, un
 - Lists strengths and areas for improvement
 - Writes a personalized recommendation
 
----
-
 #### GitHub API
 **What it is:** GitHub's official API that lets us programmatically fetch public data about any GitHub user.
 
 **Why we used it:** It gives us structured, real-time data — repositories, languages, stars, followers, bios, and more. This is the raw material that the AI analyzes.
-
----
 
 #### Nodemailer
 
@@ -88,19 +75,11 @@ Think of it as a **career coach for developers** — it looks at your GitHub, un
 
 #### React + TypeScript
 
----
-
 #### Redux Toolkit
-
----
 
 #### React Router DOM
 
----
-
 #### Axios
-
----
 
 #### Vite
 
@@ -113,7 +92,7 @@ github_profile_analyzer/
 │
 ├── backend/                    # Node.js + Express API
 │   ├── src/
-│   │   ├── controllers/        # (future use)
+│   │   ├── controllers/
 │   │   ├── middlewares/
 │   │   │   └── auth.middleware.ts   # JWT verification
 │   │   ├── routes/
@@ -124,7 +103,6 @@ github_profile_analyzer/
 │   │   │   ├── github.service.ts    # GitHub API calls
 │   │   │   ├── ai.service.ts        # Groq + LLaMA analysis
 │   │   │   └── email.service.ts     # Nodemailer welcome email
-│   │   ├── types/
 │   │   └── index.ts                 # Express server entry point
 │   ├── prisma/
 │   │   └── schema.prisma            # Database models
@@ -221,27 +199,22 @@ github_profile_analyzer/
 | express | latest | Web framework |
 | typescript | latest | Type safety |
 | prisma | v5 | Database ORM |
-| @prisma/client | v5 | Prisma runtime client |
-| passport | latest | Authentication middleware |
-| passport-google-oauth20 | latest | Google OAuth strategy |
+| passport | latest | Authentication middleware , Google OAuth|
 | jsonwebtoken | latest | JWT creation & verification |
 | groq-sdk | latest | Groq AI API client |
 | axios | latest | HTTP requests to GitHub API |
 | nodemailer | latest | Sending emails |
 | dotenv | latest | Environment variable management |
 | cors | latest | Cross-Origin Resource Sharing |
-| ts-node | latest | Run TypeScript directly |
 | nodemon | latest | Auto-restart on file changes |
 
 ### Frontend
 | Package | Version | Purpose |
 |---------|---------|---------|
 | react | latest | UI framework |
-| react-dom | latest | React DOM renderer |
 | typescript | latest | Type safety |
 | vite | latest | Build tool & dev server |
-| @reduxjs/toolkit | latest | State management |
-| react-redux | latest | React bindings for Redux |
+| react-redux | latest | React bindings for Redux , State Management |
 | react-router-dom | latest | Client-side routing |
 | axios | latest | API calls to backend |
 
