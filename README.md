@@ -38,25 +38,25 @@ Think of it as a **career coach for developers** — it looks at your GitHub, un
 
 ### Backend
 
-####  - Node.js + Express
+1. ####  Node.js + Express
 
-####  - Prisma ORM
+2. ####  Prisma ORM
 
-####  - NeonDB (PostgreSQL)
+3. ####  NeonDB (PostgreSQL)
 
-####  - JWT (JSON Web Tokens)
+4. ####  JWT (JSON Web Tokens)
 
-####  - Nodemailer
+5. ####  Nodemailer
 
-####  - Passport.js + Google OAuth 2.0
+6. ####  Passport.js + Google OAuth 2.0
 **What it is:** Passport.js is an authentication middleware for Node.js. Google OAuth 2.0 is Google's system that lets users log in to third-party apps using their Google account.
 
 **Why we used it:** Building a login system from scratch is complex and risky. Google OAuth is battle-tested, secure, and gives users a familiar one-click login experience. Passport.js makes integrating it into Express very straightforward.
 
-####  - Groq API + LLaMA 3.3
+7. ####  Groq API + LLaMA 3.3
 **What it is:** Groq is a platform that provides extremely fast inference for open-source AI models. LLaMA 3.3 is Meta's powerful open-source language model — comparable to GPT-4 but completely free.
 
-#### GitHub API
+8. ####  GitHub API
 **What it is:** GitHub's official API that lets us programmatically fetch public data about any GitHub user.
 
 **Why we used it:** It gives us structured, real-time data — repositories, languages, stars, followers, bios, and more. This is the raw material that the AI analyzes.
@@ -65,19 +65,19 @@ Think of it as a **career coach for developers** — it looks at your GitHub, un
 
 ### Frontend
 
-#### React + TypeScript
+1. ####  React + TypeScript
 
-#### Redux Toolkit
+2. ####  Redux Toolkit
 
-#### React Router DOM
+3. ####  React Router DOM
 
-#### Axios
+4. ####  Axios
 
-#### Vite
+5. ####  Vite
 
 ---
 
-## What the AI does:##
+## What the AI does: ##
 - Reads the GitHub profile data
 - Determines primary programming language
 - Assesses skill level (Beginner / Intermediate / Expert)
