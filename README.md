@@ -38,36 +38,28 @@ Think of it as a **career coach for developers** — it looks at your GitHub, un
 
 ### Backend
 
-#### Node.js + Express
+####  - Node.js + Express
 
-#### Prisma ORM
+####  - Prisma ORM
 
-#### NeonDB (PostgreSQL)
+####  - NeonDB (PostgreSQL)
 
-#### Passport.js + Google OAuth 2.0
+####  - JWT (JSON Web Tokens)
+
+####  - Nodemailer
+
+####  - Passport.js + Google OAuth 2.0
 **What it is:** Passport.js is an authentication middleware for Node.js. Google OAuth 2.0 is Google's system that lets users log in to third-party apps using their Google account.
 
 **Why we used it:** Building a login system from scratch is complex and risky. Google OAuth is battle-tested, secure, and gives users a familiar one-click login experience. Passport.js makes integrating it into Express very straightforward.
 
-#### JWT (JSON Web Tokens)
-
-#### Groq API + LLaMA 3.3
+####  - Groq API + LLaMA 3.3
 **What it is:** Groq is a platform that provides extremely fast inference for open-source AI models. LLaMA 3.3 is Meta's powerful open-source language model — comparable to GPT-4 but completely free.
-
-**What the AI does:**
-- Reads the GitHub profile data
-- Determines primary programming language
-- Assesses skill level (Beginner / Intermediate / Expert)
-- Rates 5 different areas out of 10
-- Lists strengths and areas for improvement
-- Writes a personalized recommendation
 
 #### GitHub API
 **What it is:** GitHub's official API that lets us programmatically fetch public data about any GitHub user.
 
 **Why we used it:** It gives us structured, real-time data — repositories, languages, stars, followers, bios, and more. This is the raw material that the AI analyzes.
-
-#### Nodemailer
 
 ---
 
@@ -82,6 +74,16 @@ Think of it as a **career coach for developers** — it looks at your GitHub, un
 #### Axios
 
 #### Vite
+
+---
+
+## What the AI does:##
+- Reads the GitHub profile data
+- Determines primary programming language
+- Assesses skill level (Beginner / Intermediate / Expert)
+- Rates 5 different areas out of 10
+- Lists strengths and areas for improvement
+- Writes a personalized recommendation
 
 ---
 
@@ -156,29 +158,6 @@ github_profile_analyzer/
 │             │ ◀───────────────────────────── │                 │
 └─────────────┘                                └─────────────────┘
 ```
-
----
-
-## 🗄️ Database Schema
-
-### User Table
-| Field | Type | Description |
-|-------|------|-------------|
-| id | UUID | Unique identifier (auto-generated) |
-| email | String | User's Google email (unique) |
-| name | String | User's full name |
-| googleId | String | Google's unique ID for the user |
-| createdAt | DateTime | When the account was created |
-
-### Analyses Table
-| Field | Type | Description |
-|-------|------|-------------|
-| id | UUID | Unique identifier (auto-generated) |
-| userId | String | Which user ran this analysis |
-| githubUserName | String | Which GitHub profile was analyzed |
-| score | Integer | Overall score out of 10 |
-| feedback | JSON | Full AI analysis result |
-| createdAt | DateTime | When the analysis was run |
 
 ---
 
@@ -323,5 +302,3 @@ EMAIL_PASSWORD=your_gmail_app_password
 - Passionate about Web Development & AI Integration
 
 ---
-
-*Built with ❤️ as a portfolio project to demonstrate full-stack development skills.*
