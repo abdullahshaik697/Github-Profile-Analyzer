@@ -2,17 +2,19 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { setCredentials } from "../store/authSlice"
+import { useRef } from "react"
 import axios from "axios"
 import type { RootState } from "../store/index"
-import { Avatar, Button, Card, CardBody, Chip, Input } from "@heroui/react"
+import { Button, Card, CardBody, Chip } from "@heroui/react"
 import { Icon } from "@iconify/react"
-
 
 const Dashboard = () => {
     const [searchParam] = useSearchParams()
     const token = searchParam.get("token")
     const name = searchParam.get("name")
     const email = searchParam.get("email")
+    const resultRef = useRef<HTMLDivElement>(null)
+
 
     const storedToken = useSelector((state: RootState) => state.auth.token)
 
@@ -54,9 +56,98 @@ const Dashboard = () => {
         }
     }
 
+    const handleDownloadPDF = async () => {
+        const jsPDF = (await import("jspdf")).default
+        const pdf = new jsPDF("p", "mm", "a4")
+
+        const pageWidth = pdf.internal.pageSize.getWidth()
+        let y = 20
+
+        // HEADER
+        pdf.setFont("arial")
+        pdf.setFontSize(22)
+        pdf.setTextColor(0, 0, 0)
+        pdf.text("GitHub Profile Analysis Report", pageWidth / 2, y, { align: "center" })
+        y += 15
+
+        // PROFILE INFO
+        pdf.setFontSize(14)
+        pdf.text(`Developer: ${result.data.profile.name}`, 20, y)
+        y += 8
+        pdf.setFontSize(11)
+        pdf.setTextColor(100, 100, 100)
+        pdf.text(`Username: @${result.data.profile.username}`, 20, y)
+        y += 8
+        pdf.text(`Skill Level: ${result.aiResult.skillLevel}`, 20, y)
+        y += 8
+        pdf.text(`Followers: ${result.data.profile.followers}  |  Following: ${result.data.profile.following}  |  Repos: ${result.data.profile.publicRepos}`, 20, y)
+        y += 15
+
+        // RATINGS
+        pdf.setFontSize(14)
+        pdf.setTextColor(0, 0, 0)
+        pdf.text("Ratings", 20, y)
+        y += 8
+        pdf.setFontSize(11)
+        pdf.setTextColor(80, 80, 80)
+        const ratings = [
+            `Overall:      ${result.aiResult.ratings.overall}/10`,
+            `Languages:    ${result.aiResult.ratings.languages}/10`,
+            `Projects:     ${result.aiResult.ratings.projects}/10`,
+            `Social:       ${result.aiResult.ratings.social}/10`,
+            `Consistency:  ${result.aiResult.ratings.consistency}/10`,
+            `Code Quality: ${result.aiResult.ratings.codeQuality}/10`,
+        ]
+        ratings.forEach((r) => {
+            pdf.text(r, 20, y)
+            y += 7
+        })
+        y += 8
+
+        // STRENGTHS
+        pdf.setFontSize(14)
+        pdf.setTextColor(0, 150, 0)
+        pdf.text("Strengths", 20, y)
+        y += 8
+        pdf.setFontSize(11)
+        pdf.setTextColor(50, 50, 50)
+        result.aiResult.strengths.forEach((s: string) => {
+            pdf.text(`• ${s}`, 20, y)
+            y += 7
+        })
+        y += 8
+
+        // IMPROVEMENTS
+        pdf.setFontSize(14)
+        pdf.setTextColor(200, 150, 0)
+        pdf.text("Improvements", 20, y)
+        y += 8
+        pdf.setFontSize(11)
+        pdf.setTextColor(50, 50, 50)
+        result.aiResult.improvements.forEach((imp: string) => {
+            pdf.text(`• ${imp}`, 20, y)
+            y += 7
+        })
+        y += 8
+
+        // RECOMMENDATION
+        pdf.setFontSize(14)
+        pdf.setTextColor(0, 100, 200)
+        pdf.text("Recommendation", 20, y)
+        y += 8
+        pdf.setFontSize(11)
+        pdf.setTextColor(50, 50, 50)
+        const lines = pdf.splitTextToSize(result.aiResult.recommendation, pageWidth - 40)
+        pdf.text(lines, 20, y)
+
+        // SAVE
+        pdf.save(`${result.data.profile.username}-analysis.pdf`)
+    }
+
+
     return (
         <>
-          
+
             <div className="min-h-screen bg-black text-white">
 
                 {/* Navbar */}
@@ -74,19 +165,21 @@ const Dashboard = () => {
 
                     {/* Search */}
                     <Card className="bg-zinc-900 border border-zinc-800">
-                        <CardBody className="p-6 flex flex-row gap-3">
-                            <Input
-                                placeholder="Enter GitHub username..."
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                className="flex-1"
-                                classNames={{ input: "text-black", inputWrapper: "bg-zinc-800 border-zinc-700" }}
-                                startContent={<Icon icon="mdi:github" className="text-zinc-400" width="20" />}
-                            />
+                        <h1 className="pl-4 pt-4"> Enter the Github Profile username you want to analyze. </h1>
+                        <CardBody className="p-4 flex flex-row gap-3 items-center">
+                            <div className="flex-1 flex items-center gap-2 bg-zinc-800 border border-zinc-700 rounded-lg px-4 h-12">
+                                <Icon icon="mdi:github" className="text-zinc-400" width="25" />
+                                <input
+                                    type="text"
+                                    placeholder="Enter GitHub username..."
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className="flex-1 bg-transparent text-white placeholder:text-zinc-500 outline-none text-sm"
+                                />
+                            </div>
                             <Button
-                                className="bg-white text-black font-semibold px-6"
+                                className="bg-white text-black font-semibold px-6 h-10 rounded-md"
                                 onPress={handleAnalyzeProfile}
-                            // isLoading={loading}
                             >
                                 Analyze
                             </Button>
@@ -94,139 +187,128 @@ const Dashboard = () => {
                     </Card>
 
 
-                </div>
 
-                {result && (
-                    <>
 
-                        {/* Profile Card */}
-                        <Card className="bg-zinc-900 border border-zinc-800">
-                            <CardBody className="p-6 flex flex-row gap-6 items-center">
-                                <Avatar
-                                    src={result.data.profile.avatarUrl}
-                                    className="w-20 h-20"
-                                />
-                                <div className="flex flex-col gap-1 flex-1">
-                                    <h2 className="text-xl font-bold">{result.data.profile.name}</h2>
-                                    <p className="text-zinc-400 text-sm">@{result.data.profile.username}</p>
-                                    <p className="text-zinc-300 text-sm">{result.data.profile.bio}</p>
-                                    <div className="flex gap-4 mt-2 text-sm text-zinc-400">
-                                        <span>👥 {result.data.profile.followers} followers</span>
-                                        <span>👤 {result.data.profile.following} following</span>
-                                        <span>📁 {result.data.profile.publicRepos} repos</span>
-                                    </div>
-                                </div>
-                                <Chip className="bg-zinc-800 text-white capitalize" size="lg">
-                                    {result.aiResult.skillLevel}
-                                </Chip>
-                            </CardBody>
-                        </Card>
+                    {result && (
 
-                        {/* Score Cards */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {[
-                                { label: "Overall", value: result.aiResult.ratings.overall, icon: "mdi:star" },
-                                { label: "Languages", value: result.aiResult.ratings.languages, icon: "mdi:code-tags" },
-                                { label: "Projects", value: result.aiResult.ratings.projects, icon: "mdi:folder" },
-                                { label: "Social", value: result.aiResult.ratings.social, icon: "mdi:account-group" },
-                                { label: "Consistency", value: result.aiResult.ratings.consistency, icon: "mdi:calendar-check" },
-                                { label: "Code Quality", value: result.aiResult.ratings.codeQuality, icon: "mdi:code-braces" },
-                            ].map((item, i) => (
-                                <Card key={i} className="bg-zinc-900 border border-zinc-800">
-                                    <CardBody className="p-4 flex flex-col gap-2">
-                                        <div className="flex items-center gap-2 text-zinc-400 text-sm">
-                                            <Icon icon={item.icon} width="16" />
-                                            {item.label}
+                        <>
+                            <div ref={resultRef}>
+                                {/* Profile Card */}
+                                <Card className="bg-zinc-900 border border-zinc-800">
+                                    <CardBody className="p-6 flex flex-col gap-4">
+                                        {/* Top row — avatar + skill level */}
+                                        <div className="flex items-center justify-between">
+                                            <img
+                                                src={result.data.profile.avatarUrl}
+                                                alt="avatar"
+                                                className="w-16 h-16 rounded-full object-cover"
+                                            />
+                                            <Chip className="bg-zinc-800 text-white capitalize" size="md">
+                                                {result.aiResult.skillLevel}
+                                            </Chip>
                                         </div>
-                                        <div className="text-3xl font-bold text-white">
-                                            {item.value}
-                                            <span className="text-zinc-500 text-lg">/10</span>
+                                        {/* Info */}
+                                        <div className="flex flex-col gap-1">
+                                            <h2 className="text-xl font-bold">{result.data.profile.name}</h2>
+                                            <p className="text-zinc-400 text-sm">@{result.data.profile.username}</p>
+                                            <p className="text-zinc-300 text-sm">{result.data.profile.bio}</p>
+                                        </div>
+                                        {/* Stats */}
+                                        <div className="flex gap-4 text-sm text-zinc-400 flex-wrap">
+                                            <span>👥 {result.data.profile.followers} followers</span>
+                                            <span>👤 {result.data.profile.following} following</span>
+                                            <span>📁 {result.data.profile.publicRepos} repos</span>
                                         </div>
                                     </CardBody>
                                 </Card>
-                            ))}
-                        </div>
 
-                        {/* Strengths & Improvements */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                            {/* Strengths */}
-                            <Card className="bg-zinc-900 border border-zinc-800">
-                                <CardBody className="p-6 flex flex-col gap-3">
-                                    <h3 className="font-bold text-green-400 flex items-center gap-2">
-                                        <Icon icon="mdi:check-circle" width="20" />
-                                        Strengths
-                                    </h3>
-                                    {result.aiResult.strengths.map((s: string, i: number) => (
-                                        <p key={i} className="text-zinc-300 text-sm flex gap-2">
-                                            <span className="text-green-400">✓</span> {s}
-                                        </p>
+                                {/* Score Cards */}
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {[
+                                        { label: "Overall", value: result.aiResult.ratings.overall, icon: "mdi:star" },
+                                        { label: "Languages", value: result.aiResult.ratings.languages, icon: "mdi:code-tags" },
+                                        { label: "Projects", value: result.aiResult.ratings.projects, icon: "mdi:folder" },
+                                        { label: "Social", value: result.aiResult.ratings.social, icon: "mdi:account-group" },
+                                        { label: "Consistency", value: result.aiResult.ratings.consistency, icon: "mdi:calendar-check" },
+                                        { label: "Code Quality", value: result.aiResult.ratings.codeQuality, icon: "mdi:code-braces" },
+                                    ].map((item, i) => (
+                                        <Card key={i} className="bg-zinc-900 border border-zinc-800">
+                                            <CardBody className="p-4 flex flex-col gap-2">
+                                                <div className="flex items-center gap-2 text-zinc-400 text-sm">
+                                                    <Icon icon={item.icon} width="16" />
+                                                    {item.label}
+                                                </div>
+                                                <div className="text-3xl font-bold text-white">
+                                                    {item.value}
+                                                    <span className="text-zinc-500 text-lg">/10</span>
+                                                </div>
+                                            </CardBody>
+                                        </Card>
                                     ))}
-                                </CardBody>
-                            </Card>
+                                </div>
 
-                            {/* Improvements */}
-                            <Card className="bg-zinc-900 border border-zinc-800">
-                                <CardBody className="p-6 flex flex-col gap-3">
-                                    <h3 className="font-bold text-yellow-400 flex items-center gap-2">
-                                        <Icon icon="mdi:alert-circle" width="20" />
-                                        Improvements
-                                    </h3>
-                                    {result.aiResult.improvements.map((s: string, i: number) => (
-                                        <p key={i} className="text-zinc-300 text-sm flex gap-2">
-                                            <span className="text-yellow-400">⚠</span> {s}
-                                        </p>
-                                    ))}
-                                </CardBody>
-                            </Card>
+                                {/* Strengths & Improvements */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                            {/* Recommendation */}
-                            <Card className="bg-zinc-900 border border-zinc-800">
-                                <CardBody className="p-6 flex flex-col gap-3">
-                                    <h3 className="font-bold text-blue-400 flex items-center gap-2">
-                                        <Icon icon="mdi:lightbulb" width="20" />
-                                        Recommendation
-                                    </h3>
-                                    <p className="text-zinc-300 text-sm leading-relaxed">
-                                        {result.aiResult.recommendation}
-                                    </p>
-                                </CardBody>
-                            </Card>
-                        </div>
-                    </>
-                )}
+                                    {/* Strengths */}
+                                    <Card className="bg-zinc-900 border border-zinc-800">
+                                        <CardBody className="p-6 flex flex-col gap-3">
+                                            <h3 className="font-bold text-green-400 flex items-center gap-2">
+                                                <Icon icon="mdi:check-circle" width="20" />
+                                                Strengths
+                                            </h3>
+                                            {result.aiResult.strengths.map((s: string, i: number) => (
+                                                <p key={i} className="text-zinc-300 text-sm flex gap-2">
+                                                    <span className="text-green-400">✓</span> {s}
+                                                </p>
+                                            ))}
+                                        </CardBody>
+                                    </Card>
 
+                                    {/* Improvements */}
+                                    <Card className="bg-zinc-900 border border-zinc-800">
+                                        <CardBody className="p-6 flex flex-col gap-3">
+                                            <h3 className="font-bold text-yellow-400 flex items-center gap-2">
+                                                <Icon icon="mdi:alert-circle" width="20" />
+                                                Improvements
+                                            </h3>
+                                            {result.aiResult.improvements.map((s: string, i: number) => (
+                                                <p key={i} className="text-zinc-300 text-sm flex gap-2">
+                                                    <span className="text-yellow-400">⚠</span> {s}
+                                                </p>
+                                            ))}
+                                        </CardBody>
+                                    </Card>
+
+                                    {/* Recommendation */}
+                                    <Card className="bg-zinc-900 border border-zinc-800">
+                                        <CardBody className="p-6 flex flex-col gap-3">
+                                            <h3 className="font-bold text-blue-400 flex items-center gap-2">
+                                                <Icon icon="mdi:lightbulb" width="20" />
+                                                Recommendation
+                                            </h3>
+                                            <p className="text-zinc-300 text-sm leading-relaxed">
+                                                {result.aiResult.recommendation}
+                                            </p>
+                                        </CardBody>
+                                    </Card>
+                                </div>
+
+
+                                {/* Download Button */}
+
+                                <Button
+                                    className="bg-white text-black font-semibold px-6"
+                                    onPress={handleDownloadPDF}
+                                >
+                                    Download PDF
+                                </Button>                        </div>
+                        </>
+                    )}
+                </div>
             </div>
         </>
     )
 }
 
 export default Dashboard
-
-
-// <div>
-//     <h1>Result</h1>
-
-//     <p> Primary Language: {result.aiResult.primaryLanguage}</p>
-//     <p> Skill Level: {result.aiResult.skillLevel}</p>
-
-//     <h3>Ratings</h3>
-//     <p>Languages: {result.aiResult.ratings.languages}/10</p>
-//     <p>Projects: {result.aiResult.ratings.projects}/10</p>
-//     <p>Social: {result.aiResult.ratings.social}/10</p>
-//     <p>Consistency: {result.aiResult.ratings.consistency}/10</p>
-//     <p>Code Quality: {result.aiResult.ratings.codeQuality}/10</p>
-//     <p>Overall: {result.aiResult.ratings.overall}/10</p>
-
-//     <h3>Strengths </h3>
-//     {result.aiResult.strengths.map((s: string, i: number) => (
-//         <p key={i}>{s}</p>
-//     ))}
-//     <h3>Improvements </h3>
-//     {result.aiResult.improvements.map((s: string, i: number) => (
-//         <p key={i}>{s}</p>
-//     ))}
-//     <h3>Recommendation</h3>
-//     <p>{result.aiResult.recommendation}</p>
-
-// </div>
