@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { setCredentials } from "../store/authSlice"
+import { logout, setCredentials } from "../store/authSlice"
 import { useRef } from "react"
 import axios from "axios"
 import type { RootState } from "../store/index"
@@ -22,6 +22,9 @@ const Dashboard = () => {
     const navigate = useNavigate()
 
     const [username, setUsername] = useState("")
+    const [loading, setLoading] = useState(false)
+
+    const [error, setError] = useState("")
     const [result, setResult] = useState<any>(null)
 
     useEffect(() => {
@@ -41,18 +44,36 @@ const Dashboard = () => {
     const handleAnalyzeProfile = async () => {
 
         try {
+            setError("")
+            setLoading(true)
+            console.log("loading", true )
             const response = await axios.post("http://localhost:5000/api/analyze",
                 { username },
                 { headers: { "Authorization": `Bearer ${storedToken}`, } }
             )
-
+            
             // const result = await response.data
             setResult(response.data)
-
+            
         } catch (error) {
             console.error(error)
+            setError("GitHub username not found. Please check and try again")
         } finally {
-            // setLoading(false)
+            
+            setLoading(false)
+            console.log("loading", false )
+        }
+    }
+
+    const handleLogout = () =>{
+        try {
+            
+            dispatch(logout())
+            navigate("/login")
+
+
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -64,7 +85,6 @@ const Dashboard = () => {
         let y = 20
 
         // HEADER
-        pdf.setFont("arial")
         pdf.setFontSize(22)
         pdf.setTextColor(0, 0, 0)
         pdf.text("GitHub Profile Analysis Report", pageWidth / 2, y, { align: "center" })
@@ -156,7 +176,8 @@ const Dashboard = () => {
                         <i className="fa-brands fa-github fa-xl" style={{ color: "white" }}></i>
                         <span className="font-bold text-lg">GitHub Analyzer</span>
                     </div>
-                    <Button variant="bordered" className="text-white border-zinc-600" >
+                    <Button variant="bordered" className="text-white border-zinc-600" 
+                    onPress={handleLogout}>
                         Logout
                     </Button>
                 </div>
@@ -176,23 +197,35 @@ const Dashboard = () => {
                                     onChange={(e) => setUsername(e.target.value)}
                                     className="flex-1 bg-transparent text-white placeholder:text-zinc-500 outline-none text-sm"
                                 />
+
+                                {error && (
+                                    <p className="text-red-400 text-sm mt-2">{error}</p>
+                                )}
                             </div>
                             <Button
-                                className="bg-white text-black font-semibold px-6 h-10 rounded-md"
+                                className="bg-white text-black font-semibold px-6 h-10 rounded-md transition-all duration-300 hover:bg-gray-200 hover:scale-105"
                                 onPress={handleAnalyzeProfile}
+                                onClick={()=> console.log("Button Clicked")}
+                                isLoading={loading}
+                                isDisabled={loading}
                             >
                                 Analyze
                             </Button>
                         </CardBody>
                     </Card>
 
-
-
-
                     {result && (
-
                         <>
-                            <div ref={resultRef}>
+                            <div ref={resultRef} className="flex flex-col gap-8">
+
+                                {/* Download Button */}
+                                <Button
+                                    className="bg-white text-black font-semibold px-6"
+                                    onPress={handleDownloadPDF}
+                                >
+                                    Download PDF
+                                </Button>
+
                                 {/* Profile Card */}
                                 <Card className="bg-zinc-900 border border-zinc-800">
                                     <CardBody className="p-6 flex flex-col gap-4">
@@ -294,15 +327,7 @@ const Dashboard = () => {
                                     </Card>
                                 </div>
 
-
-                                {/* Download Button */}
-
-                                <Button
-                                    className="bg-white text-black font-semibold px-6"
-                                    onPress={handleDownloadPDF}
-                                >
-                                    Download PDF
-                                </Button>                        </div>
+                            </div>
                         </>
                     )}
                 </div>
