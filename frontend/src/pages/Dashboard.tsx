@@ -46,28 +46,28 @@ const Dashboard = () => {
         try {
             setError("")
             setLoading(true)
-            console.log("loading", true )
+            console.log("loading", true)
             const response = await axios.post("http://localhost:5000/api/analyze",
                 { username },
                 { headers: { "Authorization": `Bearer ${storedToken}`, } }
             )
-            
+
             // const result = await response.data
             setResult(response.data)
-            
+
         } catch (error) {
             console.error(error)
             setError("GitHub username not found. Please check and try again")
         } finally {
-            
+
             setLoading(false)
-            console.log("loading", false )
+            console.log("loading", false)
         }
     }
 
-    const handleLogout = () =>{
+    const handleLogout = () => {
         try {
-            
+
             dispatch(logout())
             navigate("/login")
 
@@ -176,8 +176,8 @@ const Dashboard = () => {
                         <i className="fa-brands fa-github fa-xl" style={{ color: "white" }}></i>
                         <span className="font-bold text-lg">GitHub Analyzer</span>
                     </div>
-                    <Button variant="bordered" className="text-white border-zinc-600" 
-                    onPress={handleLogout}>
+                    <Button variant="bordered" className="text-white border-zinc-600"
+                        onPress={handleLogout}>
                         Logout
                     </Button>
                 </div>
@@ -202,15 +202,13 @@ const Dashboard = () => {
                                     <p className="text-red-400 text-sm mt-2">{error}</p>
                                 )}
                             </div>
-                            <Button
-                                className="bg-white text-black font-semibold px-6 h-10 rounded-md transition-all duration-300 hover:bg-gray-200 hover:scale-105"
-                                onPress={handleAnalyzeProfile}
-                                onClick={()=> console.log("Button Clicked")}
-                                isLoading={loading}
-                                isDisabled={loading}
+                            <button
+                                className="bg-white text-black font-semibold px-6 h-10 rounded-md min-w-24"
+                                onClick={handleAnalyzeProfile}
+                                disabled={loading}
                             >
-                                Analyze
-                            </Button>
+                                {loading ? "Analyzing..." : "Analyze"}
+                            </button>
                         </CardBody>
                     </Card>
 
@@ -236,8 +234,8 @@ const Dashboard = () => {
                                                 alt="avatar"
                                                 className="w-16 h-16 rounded-full object-cover"
                                             />
-                                            <Chip className="bg-zinc-800 text-white capitalize" size="md">
-                                                {result.aiResult.skillLevel}
+                                            <Chip className="text-white capitalize" size="md">
+                                                {result.aiResult.skillLevel} Level
                                             </Chip>
                                         </div>
                                         {/* Info */}
