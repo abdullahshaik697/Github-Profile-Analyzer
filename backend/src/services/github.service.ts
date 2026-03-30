@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
+console.log("GITHUB TOKEN:", GITHUB_TOKEN ? "EXISTS" : "MISSING")
 
 const headers = {
     Authorization: `token ${GITHUB_TOKEN}`,
