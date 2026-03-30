@@ -2,6 +2,7 @@ import axios from "axios";
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 console.log("GITHUB TOKEN:", GITHUB_TOKEN ? "EXISTS" : "MISSING")
+console.log("TOKEN VALUE:", GITHUB_TOKEN)  // actual value print karo
 
 const headers = {
     Authorization: `token ${GITHUB_TOKEN}`,
