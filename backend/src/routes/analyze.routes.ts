@@ -40,10 +40,8 @@ router.post('/analyze', authMiddleware, async (req: Request, res: Response) => {
 
 
     } catch (error) {
-        res.status(500).json({
-            message: "Failed ",
-            error,
-        })
+        console.error("ANALYZE ERROR:", error)  // yeh add karo
+        res.status(500).json({ message: "Failed ", error })
     }
 })
 
