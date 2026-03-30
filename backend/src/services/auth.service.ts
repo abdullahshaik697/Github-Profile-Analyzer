@@ -13,14 +13,14 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            callbackURL: 'http://localhost:5000/auth/google/callback'
+            callbackURL: process.env.GOOGLE_CALLBACK_URL!
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
                 let user = await prisma.user.findUnique({
                     where: { googleId: profile.id },
                 });
-                
+
                 if (!user) {
                     user = await prisma.user.create({
                         data: {
@@ -37,7 +37,7 @@ passport.use(
                     process.env.JWT_SECRET!,
                     { expiresIn: '7d' }
                 );
-                
+
                 return done(null, { user, token })
             } catch (error) {
 

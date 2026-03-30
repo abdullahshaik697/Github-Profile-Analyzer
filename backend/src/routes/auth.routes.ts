@@ -19,7 +19,7 @@ router.get(
     (req: Request, res: Response) => {
 
         const { token, user } = req.user as any;
-        res.redirect(`http://localhost:5173/dashboard?token=${token}&name=${user.name}&email=${user.email}`)
+        res.redirect(`${process.env.FRONTEND_URL}/dashboard?token=${token}&name=${user.name}&email=${user.email}`)
     }
 )
 
