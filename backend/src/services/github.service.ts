@@ -40,7 +40,8 @@ const fetchUserData = async (username: string) => {
     )
 
     const reposRes = await axios.get<GithubRepo[]>(
-        `https://api.github.com/users/${username}/repos?per_page=100&sort=stars`
+        `https://api.github.com/users/${username}/repos?per_page=100&sort=stars`,
+        {headers}
     )
 
     const profile = profileRes.data
